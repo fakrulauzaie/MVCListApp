@@ -1,0 +1,55 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model List<ListApp.Models.Entities.Todo>
+
+<h1>Todos</h1>
+
+<form method="get" class="my-1">
+    <input type="text" name="searchQuery" placeholder="Search by title" class="form-control" />
+    <button type="submit" class="btn btn-primary mt-2">Search</button>
+</form>
+
+<a class="btn btn-success mb-3" asp-controller="Todos" asp-action="Add">
+    Add New Todo
+</a>
+
+@if (!Model.Any())
+{
+    <p>No todos available.</p>
+}
+else
+{
+    <table class="table ms-3">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Is Completed</th>
+                <th>Date Created</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var todo in Model)
+            {
+                <tr>
+                    <td>@todo.Id</td>
+                    <td>@todo.Title</td>
+                    <td>@todo.Description</td>
+                    <td>@(todo.IsCompleted ? "Yes" : "No")</td>
+                    <td>@todo.CreatedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@(todo.DueDate?.ToString("yyyy-MM-dd HH:mm") ?? "No Due Date")</td>
+                    <td>
+                        <a class="btn btn-primary" asp-controller="Todos" asp-action="Edit" asp-route-id="@todo.Id">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
