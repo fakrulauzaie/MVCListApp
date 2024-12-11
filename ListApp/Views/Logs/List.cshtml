@@ -1,0 +1,53 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model List<ListApp.Models.Entities.Logs>
+
+<h1>Application Logs</h1>
+
+@if (Model is null)
+{
+    <div class="alert alert-info" role="alert">
+        <p>No logs found for today.</p>
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">TimeStamp</th>
+                    <th scope="col">Level</th>
+                    <th scope="col">Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model)
+                {
+                    <tr>
+                        <td>@log.TimeStamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        <td>
+                            @if (log.Level == "Error")
+                            {
+                                <span class="text-danger font-weight-bold">@log.Level</span>
+                            }
+                            else if (log.Level == "Warning")
+                            {
+                                <span class="text-warning">@log.Level</span>
+                            }
+                            else
+                            {
+                                <span class="text-success">@log.Level</span>
+                            }
+                        </td>
+                        <td>@log.RenderedMessage</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
