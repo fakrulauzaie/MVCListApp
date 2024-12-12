@@ -11,7 +11,10 @@ options.UseSqlite(builder.Configuration.GetConnectionString("ListApi")));
 // Logging setup
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
-    .WriteTo.SQLite(Path.Combine(Environment.CurrentDirectory, "logs", "logs.db"))
+    .WriteTo.SQLite(
+        Path.Combine(Environment.CurrentDirectory, "logs", "logs.db"), 
+        batchSize: 5,
+        retentionCheckInterval: TimeSpan.FromSeconds(5))
     .CreateLogger();
 
 Log.Logger = logger; 

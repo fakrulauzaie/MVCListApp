@@ -4,50 +4,104 @@
 @{
 }
 
-@model List<ListApp.Models.Entities.Logs>
+@model LogPaginationViewModel
 
 <h1>Application Logs</h1>
 
-@if (Model is null)
-{
-    <div class="alert alert-info" role="alert">
-        <p>No logs found for today.</p>
+<div class="container">
+    <h2>Log Entries</h2>
+
+    <!-- Level Filter Dropdown -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <form asp-action="List" method="get">
+                <div class="input-group">
+                    <select name="level" class="form-control" onchange="this.form.submit()">
+                        <option value="">All Levels</option>
+                        @foreach (var level in Model.AvailableLevels)
+                        {
+                            <option value="@level" selected="@(level == Model.SelectedLevel)">@level</option>
+                        }
+                    </select>
+                </div>
+            </form>
+        </div>
     </div>
-}
-else
-{
-    <div class="table-responsive">
-        <table class="table table-striped table-hover table-bordered">
-            <thead class="table-dark">
-                <tr>
+    <div class="alert alert-info" role="alert">
+        <strong>Note:</strong> Logs are saved in batches of 5 for every 5 seconds. The table may not show the most recent logs immediately.
+    </div>
+
+    <!-- Logs Table -->
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
                     <th scope="col">TimeStamp</th>
                     <th scope="col">Level</th>
                     <th scope="col">Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model.Logs)
+            {
+                <tr>
+                    <td>@log.TimeStamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td>
+                        @if (log.Level == "Error")
+                        {
+                            <span class="text-danger font-weight-bold">@log.Level</span>
+                        }
+                        else if (log.Level == "Warning")
+                        {
+                            <span class="text-warning">@log.Level</span>
+                        }
+                        else
+                        {
+                            <span class="text-success">@log.Level</span>
+                        }
+                    </td>
+                    <td>@log.RenderedMessage</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var log in Model)
-                {
-                    <tr>
-                        <td>@log.TimeStamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                        <td>
-                            @if (log.Level == "Error")
-                            {
-                                <span class="text-danger font-weight-bold">@log.Level</span>
-                            }
-                            else if (log.Level == "Warning")
-                            {
-                                <span class="text-warning">@log.Level</span>
-                            }
-                            else
-                            {
-                                <span class="text-success">@log.Level</span>
-                            }
-                        </td>
-                        <td>@log.RenderedMessage</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+            }
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <nav>
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" 
+                       asp-action="List" 
+                       asp-route-page="@(Model.CurrentPage - 1)"
+                       asp-route-level="@Model.SelectedLevel">Previous</a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" 
+                       asp-action="List" 
+                       asp-route-page="@i"
+                       asp-route-level="@Model.SelectedLevel">@i</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" 
+                       asp-action="List" 
+                       asp-route-page="@(Model.CurrentPage + 1)"
+                       asp-route-level="@Model.SelectedLevel">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+
+    <div class="text-muted">
+        Showing @Model.Logs.Count of @Model.TotalCount logs
     </div>
-}
+</div>
+

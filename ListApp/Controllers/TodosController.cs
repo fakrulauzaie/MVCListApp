@@ -3,7 +3,6 @@ using ListApp.Models;
 using ListApp.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 
 namespace ListApp.Controllers
 {
